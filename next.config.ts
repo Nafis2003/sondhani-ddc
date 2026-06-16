@@ -12,6 +12,7 @@ const withSerwist = withSerwistInit({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["@react-pdf/renderer"],
+  turbopack: {},
 
   webpack: (config) => {
     config.resolve = config.resolve || {};
