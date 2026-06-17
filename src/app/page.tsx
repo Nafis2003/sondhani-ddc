@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { InstallPWA } from "@/components/install-pwa";
 import { LabForm } from "@/components/lab-form";
@@ -19,6 +20,7 @@ const PdfPreview = dynamic(() => import("@/components/pdf/pdf-preview"), {
 });
 
 export default function Dashboard() {
+  const router = useRouter();
   const [pdfRecord, setPdfRecord] = useState<PatientRecord | null>(null);
   const [editingRecord, setEditingRecord] = useState<PatientRecord | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -36,6 +38,16 @@ export default function Dashboard() {
     }
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+    } catch (e) {
+      console.error("Logout failed", e);
+      router.push("/login");
+    }
+  };
+
   return (
     <div className="bg-background font-sans text-foreground selection:bg-primary/10 flex flex-col flex-1">
       <NetworkStatus />
@@ -51,7 +63,7 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center border border-input overflow-hidden">
             <InstallPWA className="rounded-none border-0 bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-3 md:px-6 gap-2 h-10" />
-            <Button variant="ghost" className="rounded-none border-0 hover:bg-muted font-medium px-3 md:px-6 h-10 gap-2">
+            <Button onClick={handleLogout} variant="ghost" className="rounded-none border-0 hover:bg-muted font-medium px-3 md:px-6 h-10 gap-2">
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Log out</span>
             </Button>
