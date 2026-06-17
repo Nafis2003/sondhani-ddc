@@ -3,6 +3,8 @@
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { getEncryptionKey, clearEncryptionKey } from "@/lib/store";
+import { clearAllPatients } from "@/lib/localforage";
 import { InstallPWA } from "@/components/install-pwa";
 import { LabForm } from "@/components/lab-form";
 import { HistoryTable } from "@/components/history-table";
@@ -26,10 +28,17 @@ export default function Dashboard() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
+    // Cryptographic Lock Check
+    const key = getEncryptionKey();
+    if (!key) {
+      router.replace("/login");
+      return;
+    }
+
     cleanupExpiredRecords();
     const cleanup = initSyncListeners();
     return cleanup;
-  }, []);
+  }, [router]);
 
   const handleSaved = useCallback((record: PatientRecord, generatePdf: boolean) => {
     setRefreshTrigger((n) => n + 1);
@@ -40,11 +49,19 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
+      // 1. Obliterate offline encrypted database for security
+      await clearAllPatients();
+      // 2. Wipe derived decryption key from RAM
+      clearEncryptionKey();
+      // 3. Wipe UI verification flags
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("authVerification");
+      
       await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/login");
+      window.location.href = "/login"; // Hard reload to clear all states
     } catch (e) {
       console.error("Logout failed", e);
-      router.push("/login");
+      window.location.href = "/login";
     }
   };
 

@@ -1,4 +1,5 @@
-import { getUnsyncedPatients, updatePatientSync, mergeServerRecords } from "./localforage";
+import { getUnsyncedPatients, updatePatientSync, mergeServerRecords, clearAllPatients } from "./localforage";
+import { clearEncryptionKey } from "./store";
 import type { PatientRecord } from "./types";
 
 const SYNC_QUEUE_KEY = "sondhani_sync_queue";
@@ -36,6 +37,14 @@ function removeFromSyncQueue(patientId: string): void {
   setSyncQueue(queue);
 }
 
+async function forceLogout() {
+  await clearAllPatients();
+  clearEncryptionKey();
+  localStorage.removeItem("isAuthenticated");
+  localStorage.removeItem("authVerification");
+  window.location.href = "/login";
+}
+
 async function syncRecordToCloud(record: PatientRecord): Promise<boolean> {
   console.log("[Sync] Pushing record to cloud:", record.refId);
   try {
@@ -44,6 +53,10 @@ async function syncRecordToCloud(record: PatientRecord): Promise<boolean> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(record),
     });
+    if (res.status === 401) {
+      await forceLogout();
+      return false;
+    }
     const data = await res.json();
     return data.success;
   } catch (err) {
@@ -103,6 +116,10 @@ export async function pullFromCloud(): Promise<void> {
   try {
     console.log("[Sync] Pulling records from cloud...");
     const res = await fetch("/api/sync");
+    if (res.status === 401) {
+      await forceLogout();
+      return;
+    }
     const data = await res.json();
     if (data.success && data.records) {
       await mergeServerRecords(data.records);
