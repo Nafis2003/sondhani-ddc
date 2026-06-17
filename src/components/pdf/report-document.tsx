@@ -220,7 +220,7 @@ export function ReportDocument({ record }: ReportDocumentProps) {
                   ? styles.resultPositive
                   : record[test] === "Negative"
                   ? styles.resultNegative
-                  : undefined,
+                  : {},
               ]}
             >
               {record[test]}
