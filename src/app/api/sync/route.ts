@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { patients } from "@/db/schema";
 import { sql } from "drizzle-orm";
 import type { PatientRecord } from "@/lib/types";
@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const db = getDb();
     const allRecords = await db.select().from(patients);
     return NextResponse.json({ success: true, records: allRecords });
   } catch (error) {
@@ -18,6 +19,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const db = getDb();
     const body = await req.json();
     const records: PatientRecord[] = Array.isArray(body) ? body : [body];
 

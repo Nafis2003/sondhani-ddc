@@ -64,7 +64,7 @@ export default function LoginPage() {
         if (valid) {
           setEncryptionKey(key);
           toast.success("Database unlocked!");
-          router.push("/");
+          window.location.href = "/";
         } else {
           toast.error("Incorrect password.");
         }
@@ -98,7 +98,7 @@ export default function LoginPage() {
           localStorage.setItem("isAuthenticated", "true");
           
           toast.success("Login successful");
-          router.push("/");
+          window.location.href = "/";
         } else {
           toast.error(data.error || "Login failed");
         }
