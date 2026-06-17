@@ -5,6 +5,7 @@ export const patients = pgTable("patients", {
   refId: varchar("ref_id", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   age: integer("age").notNull(),
+  sex: varchar("sex", { length: 20 }).default("Other").notNull(),
   mobile: varchar("mobile", { length: 50 }).notNull(),
   date: varchar("date", { length: 50 }).notNull(),
   time: varchar("time", { length: 50 }).notNull(),

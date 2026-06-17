@@ -50,12 +50,12 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   metaItemName: {
-    width: "50%",
+    width: "70%",
     marginBottom: 14,
     paddingRight: 12,
   },
   metaItemSmall: {
-    width: "25%",
+    width: "15%",
     marginBottom: 14,
   },
   metaItemHalf: {
