@@ -27,21 +27,35 @@ function generateRefId(): string {
 
 interface LabFormProps {
   onSaved: (record: PatientRecord, generatePdf: boolean) => void;
+  initialData?: PatientRecord;
+  isEditMode?: boolean;
 }
 
-export function LabForm({ onSaved }: LabFormProps) {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [bloodGlucose, setBloodGlucose] = useState("");
+export function LabForm({ onSaved, initialData, isEditMode = false }: LabFormProps) {
+  const [name, setName] = useState(initialData?.name || "");
+  const [age, setAge] = useState(initialData?.age ? String(initialData.age) : "");
+  const [mobile, setMobile] = useState(initialData?.mobile || "");
+  const [bloodGlucose, setBloodGlucose] = useState(() => {
+    if (!initialData?.bloodGlucose || initialData.bloodGlucose === "N/A") return "";
+    return initialData.bloodGlucose.split(" ")[0] || "";
+  });
   const [tests, setTests] = useState<Record<TestName, "Negative" | "Positive">>({
-    hbsAg: "Negative",
-    hcv: "Negative",
-    malaria: "Negative",
-    hiv: "Negative",
-    vdrl: "Negative",
+    hbsAg: initialData?.hbsAg || "Negative",
+    hcv: initialData?.hcv || "Negative",
+    malaria: initialData?.malaria || "Negative",
+    hiv: initialData?.hiv || "Negative",
+    vdrl: initialData?.vdrl || "Negative",
   });
   const [savingMode, setSavingMode] = useState<"save" | "pdf" | null>(null);
+  const [glucoseUnit, setGlucoseUnit] = useState<"mmol/L" | "mg/dL">(() => {
+    if (initialData?.bloodGlucose?.includes("mg/dL")) return "mg/dL";
+    return "mmol/L";
+  });
+  const [glucoseType, setGlucoseType] = useState<"Fasting" | "2h glucose" | "Random">(() => {
+    if (initialData?.bloodGlucose?.includes("(Fasting)")) return "Fasting";
+    if (initialData?.bloodGlucose?.includes("(2h glucose)")) return "2h glucose";
+    return "Random";
+  });
 
   const handleTestChange = (test: TestName, value: string) => {
     setTests((prev) => ({ ...prev, [test]: value as "Negative" | "Positive" }));
@@ -66,20 +80,20 @@ export function LabForm({ onSaved }: LabFormProps) {
     try {
       const now = new Date();
       const record: PatientRecord = {
-        id: crypto.randomUUID(),
-        refId: generateRefId(),
+        id: initialData?.id || crypto.randomUUID(),
+        refId: initialData?.refId || generateRefId(),
         name: name.trim(),
         age: Number(age),
         mobile: mobile.trim(),
-        date: now.toISOString().slice(0, 10),
-        time: now.toTimeString().slice(0, 5),
+        date: initialData?.date || now.toISOString().slice(0, 10),
+        time: initialData?.time || now.toTimeString().slice(0, 5),
         hbsAg: tests.hbsAg,
         hcv: tests.hcv,
         malaria: tests.malaria,
         hiv: tests.hiv,
         vdrl: tests.vdrl,
-        bloodGlucose: bloodGlucose.trim() || "N/A",
-        createdAt: Date.now(),
+        bloodGlucose: bloodGlucose.trim() ? `${bloodGlucose.trim()} ${glucoseUnit} (${glucoseType})` : "N/A",
+        createdAt: initialData?.createdAt || Date.now(),
         synced: false,
       };
 
@@ -98,18 +112,20 @@ export function LabForm({ onSaved }: LabFormProps) {
       // Background sync
       syncToCloud(record).catch(() => {});
 
-      // Reset form
-      setName("");
-      setAge("");
-      setMobile("");
-      setBloodGlucose("");
-      setTests({
-        hbsAg: "Negative",
-        hcv: "Negative",
-        malaria: "Negative",
-        hiv: "Negative",
-        vdrl: "Negative",
-      });
+      if (!isEditMode) {
+        // Reset form
+        setName("");
+        setAge("");
+        setMobile("");
+        setBloodGlucose("");
+        setTests({
+          hbsAg: "Negative",
+          hcv: "Negative",
+          malaria: "Negative",
+          hiv: "Negative",
+          vdrl: "Negative",
+        });
+      }
 
       onSaved(record, generatePdf);
     } catch (err) {
@@ -122,11 +138,10 @@ export function LabForm({ onSaved }: LabFormProps) {
   };
 
   const testNames: TestName[] = ["hbsAg", "hcv", "malaria", "hiv", "vdrl"];
-  const [glucoseUnit, setGlucoseUnit] = useState<"mmol/L" | "mg/dL">("mmol/L");
 
   return (
-    <div className="mx-auto max-w-4xl pb-16">
-      <div className="border border-border bg-card flex flex-col">
+    <div className={isEditMode ? "w-full animate-in fade-in duration-200" : "mx-auto max-w-4xl pb-16"}>
+      <div className={isEditMode ? "bg-card flex flex-col" : "border border-border bg-card flex flex-col"}>
         
         {/* Patient Details Section */}
         <section className="p-6 md:p-10">
@@ -187,12 +202,22 @@ export function LabForm({ onSaved }: LabFormProps) {
                   />
                 </div>
                 <Select value={glucoseUnit} onValueChange={(v) => setGlucoseUnit(v as "mmol/L" | "mg/dL")}>
-                  <SelectTrigger className="!h-12 w-[90px] px-3 text-sm font-medium bg-muted border border-border/30 hover:border-border transition-colors rounded-none flex-shrink-0">
+                  <SelectTrigger className="!h-12 w-[80px] px-2 text-xs font-medium bg-muted border border-border/30 hover:border-border transition-colors rounded-none flex-shrink-0 border-r-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="mmol/L">mmol/L</SelectItem>
                     <SelectItem value="mg/dL">mg/dL</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={glucoseType} onValueChange={(v) => setGlucoseType(v as "Fasting" | "2h glucose" | "Random")}>
+                  <SelectTrigger className="!h-12 w-[110px] px-2 text-xs font-medium bg-muted border border-border/30 hover:border-border transition-colors rounded-none flex-shrink-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Fasting">Fasting</SelectItem>
+                    <SelectItem value="2h glucose">2h glucose</SelectItem>
+                    <SelectItem value="Random">Random</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -212,7 +237,7 @@ export function LabForm({ onSaved }: LabFormProps) {
                   value={tests[test]}
                   onValueChange={(v) => v && handleTestChange(test, v)}
                 >
-                  <SelectTrigger className="!h-12 w-full text-base px-4 font-medium transition-colors bg-muted border-transparent hover:bg-muted/80 focus:bg-background">
+                  <SelectTrigger className="!h-12 w-full text-base px-4 font-medium transition-colors bg-muted border-transparent hover:bg-muted/80 focus:bg-muted/80">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

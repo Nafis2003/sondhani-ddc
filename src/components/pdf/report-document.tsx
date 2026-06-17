@@ -6,28 +6,28 @@ import { TEST_LABELS, type TestName } from "@/lib/types";
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 56,
     fontSize: 10,
     fontFamily: "Helvetica",
     color: "#1e1e1e",
   },
   header: {
     alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 14,
+    marginBottom: 32,
+    paddingBottom: 24,
     borderBottomWidth: 1,
     borderBottomColor: "#e2e2e2",
   },
   clinicName: {
-    fontSize: 18,
+    fontSize: 22,
     fontFamily: "Helvetica-Bold",
-    marginBottom: 4,
+    marginBottom: 6,
     letterSpacing: 1,
   },
   department: {
     fontSize: 11,
     color: "#555",
-    marginBottom: 2,
+    marginBottom: 4,
   },
   location: {
     fontSize: 9,
@@ -36,29 +36,29 @@ const styles = StyleSheet.create({
   metaGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginBottom: 20,
-    padding: 12,
+    marginBottom: 32,
+    padding: 20,
     backgroundColor: "#f9f9f9",
   },
   metaItem: {
     width: "33.33%",
-    marginBottom: 6,
+    marginBottom: 14,
   },
   metaLabel: {
     fontSize: 8,
     color: "#888",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   metaValue: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "Helvetica-Bold",
   },
   sectionTitle: {
     fontSize: 11,
     fontFamily: "Helvetica-Bold",
-    marginBottom: 8,
+    marginBottom: 12,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     color: "#555",
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
-    paddingBottom: 6,
+    paddingBottom: 10,
     marginBottom: 4,
   },
   tableHeaderCell: {
@@ -80,13 +80,13 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
-    paddingVertical: 6,
+    paddingVertical: 10,
     borderBottomWidth: 0.5,
     borderBottomColor: "#eee",
   },
   tableCell: {
     width: "50%",
-    fontSize: 10,
+    fontSize: 11,
   },
   resultNegative: {
     color: "#166534",
@@ -99,17 +99,17 @@ const styles = StyleSheet.create({
   glucoseRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 10,
+    padding: 16,
     backgroundColor: "#f9f9f9",
-    marginTop: 8,
-    marginBottom: 24,
+    marginTop: 20,
+    marginBottom: 0,
   },
   glucoseLabel: {
-    fontSize: 10,
+    fontSize: 11,
     color: "#555",
   },
   glucoseValue: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "Helvetica-Bold",
   },
   disclaimer: {
@@ -138,8 +138,8 @@ export function ReportDocument({ record }: ReportDocumentProps) {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.clinicName}>Sondhani Group</Text>
-          <Text style={styles.department}>Blood Group Testing Lab</Text>
+          <Text style={styles.clinicName}>Sondhani DDC</Text>
+          <Text style={styles.department}>Blood Testing Lab</Text>
           <Text style={styles.location}>Mirpur 14, Dhaka, Bangladesh</Text>
         </View>
 
@@ -194,16 +194,20 @@ export function ReportDocument({ record }: ReportDocumentProps) {
         ))}
 
         {/* Blood Glucose */}
-        <View style={styles.glucoseRow}>
-          <Text style={styles.glucoseLabel}>Blood Glucose</Text>
-          <Text style={styles.glucoseValue}>{record.bloodGlucose}</Text>
-        </View>
-
-        {/* Disclaimer */}
-        <Text style={styles.disclaimer}>
-          This is a computer-generated report. Valid for 7 days from the date of
-          issue.
-        </Text>
+        {record.bloodGlucose && record.bloodGlucose !== "N/A" && (
+          <View style={styles.glucoseRow}>
+            <Text style={styles.glucoseLabel}>
+              {record.bloodGlucose.includes("(Fasting)")
+                ? "Fasting Blood Sugar (FBS)"
+                : record.bloodGlucose.includes("(2h glucose)")
+                ? "2 Hours Post-Prandial Glucose (2h PPBS)"
+                : "Random Blood Sugar (RBS)"}
+            </Text>
+            <Text style={styles.glucoseValue}>
+              {record.bloodGlucose.replace(/\s*\(.*?\)\s*$/, "")}
+            </Text>
+          </View>
+        )}
       </Page>
     </Document>
   );

@@ -38,14 +38,12 @@ export function NetworkStatus() {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium transition-all duration-300 ${
-        visible
-          ? "translate-y-0 opacity-100"
-          : "-translate-y-full opacity-0"
+      className={`relative z-50 flex items-center justify-center gap-2 px-4 text-xs font-medium transition-all duration-300 overflow-hidden ${
+        visible ? "h-10 opacity-100 border-b" : "h-0 opacity-0 border-transparent"
       } ${
         isOnline
-          ? "bg-emerald-50 text-emerald-700 border-b border-emerald-200"
-          : "bg-amber-50 text-amber-700 border-b border-amber-200"
+          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+          : "bg-amber-50 text-amber-700 border-amber-200"
       }`}
     >
       {isOnline ? (

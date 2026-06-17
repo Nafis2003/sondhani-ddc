@@ -1,14 +1,20 @@
 "use client";
 
-import { SerwistProvider } from "@serwist/next/react";
+import { useEffect } from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <SerwistProvider
-      swUrl="/sw.js"
-      disable={process.env.NODE_ENV === "development"}
-    >
-      {children}
-    </SerwistProvider>
-  );
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          console.log("Service Worker registered with scope:", registration.scope);
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+  }, []);
+
+  return <>{children}</>;
 }

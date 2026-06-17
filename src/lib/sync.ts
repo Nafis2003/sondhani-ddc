@@ -1,4 +1,4 @@
-import { getUnsyncedPatients, updatePatientSync } from "./localforage";
+import { getUnsyncedPatients, updatePatientSync, mergeServerRecords } from "./localforage";
 import type { PatientRecord } from "./types";
 
 const SYNC_QUEUE_KEY = "sondhani_sync_queue";
@@ -97,18 +97,34 @@ export async function flushSyncQueue(): Promise<void> {
     }
   }
 }
+export async function pullFromCloud(): Promise<void> {
+  if (!navigator.onLine) return;
+  
+  try {
+    console.log("[Sync] Pulling records from cloud...");
+    const res = await fetch("/api/sync");
+    const data = await res.json();
+    if (data.success && data.records) {
+      await mergeServerRecords(data.records);
+      console.log("[Sync] Successfully merged server records");
+    }
+  } catch (err) {
+    console.error("[Sync] Pull error:", err);
+  }
+}
 
 export function initSyncListeners(): () => void {
-  const handleOnline = () => {
-    console.log("[Sync] Back online, flushing queue...");
-    flushSyncQueue();
+  const handleOnline = async () => {
+    console.log("[Sync] Back online, syncing...");
+    await pullFromCloud();
+    await flushSyncQueue();
   };
 
   window.addEventListener("online", handleOnline);
 
-  // Try flushing on init if online
+  // Try syncing on init if online
   if (navigator.onLine) {
-    flushSyncQueue();
+    pullFromCloud().then(() => flushSyncQueue());
   }
 
   return () => {

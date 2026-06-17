@@ -15,5 +15,7 @@ export const patients = pgTable("patients", {
   vdrl: varchar("vdrl", { length: 50 }).notNull(),
   bloodGlucose: varchar("blood_glucose", { length: 50 }).notNull(),
   createdAt: bigint("created_at", { mode: "number" }).notNull(),
+  updatedAt: bigint("updated_at", { mode: "number" }).notNull().default(0),
+  isDeleted: boolean("is_deleted").default(false).notNull(),
   synced: boolean("synced").default(true).notNull(),
 });

@@ -72,30 +72,21 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full antialiased"
+      className="antialiased"
     >
       <head>
-        <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                  for(let registration of registrations) {
-                    registration.unregister();
-                  }
-                });
-              }
-            `
-          }}
-        />
       </head>
-      <body className={`${inter.className} min-h-full flex flex-col`}>
+      <body className={`${inter.className} min-h-screen flex flex-col`}>
         <Providers>
           {children}
           <Toaster position="top-center" richColors />
         </Providers>
+        <footer className="w-full py-12">
+          <div className="container max-w-4xl mx-auto px-4 md:px-8 text-center text-sm text-muted-foreground">
+            © {new Date().getFullYear()} Sondhani DDC. All rights reserved.
+          </div>
+        </footer>
       </body>
     </html>
   );

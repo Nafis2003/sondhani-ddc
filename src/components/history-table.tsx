@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Trash2, Clock, Eye, SlidersHorizontal } from "lucide-react";
+import { Search, Trash2, Clock, Eye, SlidersHorizontal, Pencil, Download } from "lucide-react";
 import { getAllPatients, searchPatients, deletePatient } from "@/lib/localforage";
 import { cleanupExpiredRecords } from "@/lib/ttl";
 import type { PatientRecord } from "@/lib/types";
@@ -27,10 +27,11 @@ import { toast } from "sonner";
 
 interface HistoryTableProps {
   onViewPdf: (record: PatientRecord) => void;
+  onEdit: (record: PatientRecord) => void;
   refreshTrigger?: number;
 }
 
-export function HistoryTable({ onViewPdf, refreshTrigger }: HistoryTableProps) {
+export function HistoryTable({ onViewPdf, onEdit, refreshTrigger }: HistoryTableProps) {
   const [patients, setPatients] = useState<PatientRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
@@ -57,7 +58,33 @@ export function HistoryTable({ onViewPdf, refreshTrigger }: HistoryTableProps) {
     setSearchQuery(value);
   };
 
+  const handleDownload = async (patient: PatientRecord) => {
+    try {
+      toast.loading("Generating PDF...", { id: "pdf-gen" });
+      const { pdf } = await import("@react-pdf/renderer");
+      const { ReportDocument } = await import("@/components/pdf/report-document");
+      
+      const blob = await pdf(<ReportDocument record={patient} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Sondhani_Report_${patient.refId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast.success("Download started", { id: "pdf-gen" });
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      toast.error("Failed to generate PDF", { id: "pdf-gen" });
+    }
+  };
+
   const handleDelete = async (id: string, refId: string) => {
+    if (!window.confirm(`Are you sure you want to delete report ${refId}? This action cannot be undone.`)) {
+      return;
+    }
     await deletePatient(id);
     toast.success(`Deleted ${refId}`);
     loadPatients();
@@ -174,11 +201,29 @@ export function HistoryTable({ onViewPdf, refreshTrigger }: HistoryTableProps) {
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={() => handleDownload(patient)}
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                          title="Download PDF"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => onViewPdf(patient)}
                           className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                           title="View PDF"
                         >
                           <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onEdit(patient)}
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                          title="Edit report"
+                        >
+                          <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"

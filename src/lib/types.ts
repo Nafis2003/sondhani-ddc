@@ -13,6 +13,8 @@ export interface PatientRecord {
   vdrl: "Negative" | "Positive";
   bloodGlucose: string;
   createdAt: number;
+  updatedAt?: number;
+  isDeleted?: boolean;
   synced: boolean;
 }
 
