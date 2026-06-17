@@ -1,10 +1,12 @@
-const CACHE_NAME = 'sondhani-ddc-cache-v8';
+const CACHE_NAME = 'sondhani-ddc-cache-v9';
 
 // Add the assets you want to be cached immediately
 const PRECACHE_ASSETS = [
   '/offline',
   '/manifest.webmanifest',
   '/icon.svg',
+  '/icon-192x192.png',
+  '/icon-512x512.png',
   '/file.svg',
   '/globe.svg',
   '/next.svg',
