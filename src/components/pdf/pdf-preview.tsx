@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { X, FileText, Download, ExternalLink } from "lucide-react";
+import { X, FileText, Download } from "lucide-react";
 import type { ReportRecord } from "@/lib/types";
 import { pdf } from "@react-pdf/renderer";
 import { ReportDocument } from "./report-document";
@@ -63,26 +63,15 @@ export default function PdfPreview({ record, onClose }: PdfPreviewProps) {
           </div>
           <div className="flex items-center gap-2">
             {blobUrl && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleDownload}
-                  className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-md h-8 w-8"
-                  title="Download PDF"
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => window.open(blobUrl, "_blank")}
-                  className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-md h-8 w-8"
-                  title="Open in new tab"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </Button>
-              </>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleDownload}
+                className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-md h-8 w-8"
+                title="Download PDF"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
             )}
             <Button
               variant="ghost"
