@@ -72,7 +72,7 @@ export default function Dashboard() {
       <header className="w-full bg-background">
         <div className="container max-w-4xl mx-auto flex py-6 items-center justify-between px-4 md:px-8">
           <div className="flex items-center gap-3 font-bold tracking-tighter text-2xl md:text-3xl">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#dc2626" stroke="none" className="h-8 w-8 md:h-10 md:w-10 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 md:h-10 md:w-10 shrink-0">
               <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
             </svg>
             Sondhani DDC
