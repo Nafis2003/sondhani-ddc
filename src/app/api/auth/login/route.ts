@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
 import { SignJWT } from "jose";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-sondhani";
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
-    const isValid = (email === "test@gmail.com" && password === "123456") || 
-                    (email === "test@gmail.com" && password === ADMIN_PASSWORD);
+    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+      return NextResponse.json(
+        { success: false, error: "Server misconfiguration" },
+        { status: 500 }
+      );
+    }
+
+    const isValid = email === ADMIN_EMAIL && password === ADMIN_PASSWORD;
 
     if (!isValid) {
       return NextResponse.json(
