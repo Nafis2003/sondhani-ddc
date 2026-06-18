@@ -2,9 +2,9 @@
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Sondhani DDC Lab Report System',
-    short_name: 'Sondhani Lab',
-    description: 'Offline-first medical lab report system for Sondhani Group',
+    name: 'Sondhani DDC',
+    short_name: 'Sondhani DDC',
+    description: 'Offline-first medical lab report management system for Sondhani DDC',
     start_url: '/login',
     scope: '/',
     display: 'standalone',

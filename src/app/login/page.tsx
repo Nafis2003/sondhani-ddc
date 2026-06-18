@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Lock, Mail, Droplet } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import { deriveKey, createVerificationData, verifyKey } from "@/lib/crypto";
 import { setEncryptionKey } from "@/lib/store";
 
@@ -119,10 +119,10 @@ export default function LoginPage() {
     <div className="h-dvh flex flex-col bg-background">
       {/* Brand Header */}
       <header className="w-full py-6 px-4 md:px-8">
-        <div className="max-w-sm mx-auto flex items-center gap-4 font-bold tracking-tighter text-2xl">
-          <div className="flex h-10 w-10 items-center justify-center bg-foreground text-background shrink-0">
-            <Droplet className="h-6 w-6" />
-          </div>
+        <div className="max-w-sm mx-auto flex items-center gap-3 font-bold tracking-tighter text-2xl">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#dc2626" stroke="none" className="h-8 w-8 shrink-0">
+            <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
+          </svg>
           Sondhani DDC
         </div>
       </header>

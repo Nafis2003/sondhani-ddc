@@ -11,10 +11,10 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const APP_NAME = "Sondhani Lab";
-const APP_DEFAULT_TITLE = "Sondhani Lab Reports";
-const APP_TITLE_TEMPLATE = "%s - Sondhani Lab";
-const APP_DESCRIPTION = "Offline-first medical lab report system for Sondhani Group";
+const APP_NAME = "Sondhani DDC";
+const APP_DEFAULT_TITLE = "Sondhani DDC";
+const APP_TITLE_TEMPLATE = "%s - Sondhani DDC";
+const APP_DESCRIPTION = "Offline-first medical lab report management system for Sondhani DDC";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     template: APP_TITLE_TEMPLATE,
   },
   description: APP_DESCRIPTION,
-  keywords: ["Lab Report", "Medical", "Sondhani Group", "Offline Lab", "PWA"],
-  authors: [{ name: "Sondhani Labs" }],
-  creator: "Sondhani Group",
-  publisher: "Sondhani Group",
+  keywords: ["Lab Report", "Medical", "Sondhani DDC", "Sondhani Group", "Offline Lab", "PWA", "Diagnostic Center"],
+  authors: [{ name: "Sondhani DDC" }],
+  creator: "Sondhani DDC",
+  publisher: "Sondhani DDC",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -43,8 +43,16 @@ export const metadata: Metadata = {
       template: APP_TITLE_TEMPLATE,
     },
     description: APP_DESCRIPTION,
-    url: "https://sondhanilab.com",
+    url: "https://sondhani-report.vercel.app",
     locale: "en_US",
+    images: [
+      {
+        url: "/icon-512x512.png",
+        width: 512,
+        height: 512,
+        alt: "Sondhani DDC",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -53,7 +61,7 @@ export const metadata: Metadata = {
       template: APP_TITLE_TEMPLATE,
     },
     description: APP_DESCRIPTION,
-    creator: "@sondhanilab",
+    images: ["/icon-512x512.png"],
   },
 };
 
