@@ -91,8 +91,19 @@ export default function RootLayout({
           <Toaster position="top-center" richColors />
         </Providers>
         <footer className="w-full py-12">
-          <div className="container max-w-4xl mx-auto px-4 md:px-8 text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Sondhani DDC. All rights reserved.
+          <div className="container max-w-4xl mx-auto px-4 md:px-8 text-center text-sm text-muted-foreground space-y-1">
+            <p>© {new Date().getFullYear()} Sondhani DDC. All rights reserved.</p>
+            <p>
+              Developed by{" "}
+              <a
+                href="https://nafis-sadiq.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground underline underline-offset-2 decoration-muted-foreground/30 hover:decoration-foreground transition-colors"
+              >
+                Nafis Sadiq
+              </a>
+            </p>
           </div>
         </footer>
       </body>
