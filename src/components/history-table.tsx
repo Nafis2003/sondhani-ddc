@@ -300,7 +300,7 @@ export function HistoryTable({ onViewPdf, onEdit, refreshTrigger }: HistoryTable
                           variant="ghost"
                           size="icon"
                           onClick={() => onViewPdf(report)}
-                          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary/50 hidden sm:inline-flex"
                           title="View PDF"
                         >
                           <Eye className="h-4 w-4" />
