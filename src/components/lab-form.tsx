@@ -57,8 +57,13 @@ const formSchema = z
         message: "Enter a valid age (1–150)",
       }),
     sex: z.enum(["Male", "Female", "Other"]),
-    mobile: z.string().min(1, "Mobile number is required"),
-    bloodGlucose: z.string().optional(),
+    mobile: z
+      .string()
+      .regex(/^\d{10}$/, "Enter exactly 10 digits after +880"),
+    bloodGlucose: z
+      .string()
+      .refine((val) => val === "" || /^\d*\.?\d+$/.test(val), "Enter a valid number")
+      .optional(),
     glucoseUnit: z.enum(["mmol/L", "mg/dL"]),
     glucoseType: z.enum(["Fasting", "2h glucose", "Random"]),
     hbsAg: TEST_RESULT,
@@ -87,7 +92,7 @@ export function LabForm({ onSaved, initialData, isEditMode = false }: LabFormPro
       name: initialData?.name ?? "",
       age: initialData?.age ? String(initialData.age) : "",
       sex: (initialData?.sex as "Male" | "Female" | "Other") ?? "Male",
-      mobile: initialData?.mobile ?? "",
+      mobile: initialData?.mobile?.replace(/^\+880/, "") ?? "",
       bloodGlucose: (() => {
         if (!initialData?.bloodGlucose || initialData.bloodGlucose === "N/A") return "";
         return initialData.bloodGlucose.split(" ")[0] ?? "";
@@ -122,7 +127,7 @@ export function LabForm({ onSaved, initialData, isEditMode = false }: LabFormPro
         name: values.name.trim(),
         age: Number(values.age),
         sex: values.sex,
-        mobile: values.mobile.trim(),
+        mobile: `+880${values.mobile.trim()}`,
         date: initialData?.date ?? now.toISOString().slice(0, 10),
         time: initialData?.time ?? now.toTimeString().slice(0, 5),
         hbsAg: values.hbsAg ?? "N/A",
@@ -223,11 +228,22 @@ export function LabForm({ onSaved, initialData, isEditMode = false }: LabFormPro
                       <div className="relative">
                         <Phone className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                         <FormControl>
-                          <Input
-                            placeholder="01XXXXXXXXX"
-                            {...field}
-                            className="h-12 pl-12 text-base bg-muted border border-border/30 hover:border-border focus-visible:bg-background transition-colors"
-                          />
+                          <div className="flex h-12 bg-muted border border-border/30 hover:border-border focus-visible:bg-background transition-colors rounded-lg has-[input:focus-visible]:border-ring has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-ring/30">
+                            <span className="flex items-center pl-12 pr-1 text-base font-medium text-foreground select-none">
+                              +880
+                            </span>
+                            <Input
+                              placeholder="1XXXXXXXXX"
+                              maxLength={10}
+                              inputMode="numeric"
+                              {...field}
+                              className="h-full flex-1 border-0 bg-transparent pl-1 text-base focus-visible:ring-0 focus-visible:ring-offset-0"
+                              onInput={(e) => {
+                                const target = e.currentTarget;
+                                target.value = target.value.replace(/\D/g, "");
+                              }}
+                            />
+                          </div>
                         </FormControl>
                       </div>
                       <FormMessage />
@@ -302,9 +318,12 @@ export function LabForm({ onSaved, initialData, isEditMode = false }: LabFormPro
                           <Droplet className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                           <FormControl>
                             <Input
+                              type="number"
+                              step="any"
+                              min={0}
                               placeholder="Value"
                               {...field}
-                              className="h-12 pl-12 text-base bg-muted border border-border/30 hover:border-border focus-visible:bg-background transition-colors rounded-none border-r-0"
+                              className="h-12 pl-12 text-base bg-muted border border-border/30 hover:border-border focus-visible:bg-background transition-colors rounded-none border-r-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                             />
                           </FormControl>
                         </div>
