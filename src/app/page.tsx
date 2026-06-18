@@ -47,6 +47,25 @@ export default function Dashboard() {
     }
   }, []);
 
+  const handleViewPdf = useCallback(async (record: ReportRecord) => {
+    const isMobile = window.innerWidth < 640;
+    if (isMobile) {
+      const { pdf } = await import("@react-pdf/renderer");
+      const { ReportDocument } = await import("@/components/pdf/report-document");
+      const blob = await pdf(<ReportDocument record={record} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Sondhani_Report_${record.refId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 500);
+    } else {
+      setPdfRecord(record);
+    }
+  }, []);
+
   const handleLogout = async () => {
     try {
       // 1. Data remains encrypted on disk. We NEVER obliterate data.
@@ -112,7 +131,7 @@ export default function Dashboard() {
             </TabsContent>
             
             <TabsContent value="history" className="focus-visible:outline-none">
-              <HistoryTable onViewPdf={setPdfRecord} onEdit={setEditingRecord} refreshTrigger={refreshTrigger} />
+              <HistoryTable onViewPdf={handleViewPdf} onEdit={setEditingRecord} refreshTrigger={refreshTrigger} />
             </TabsContent>
           </Tabs>
         </div>

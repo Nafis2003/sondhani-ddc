@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { X, FileText, Download } from "lucide-react";
 import type { ReportRecord } from "@/lib/types";
@@ -15,6 +15,7 @@ interface PdfPreviewProps {
 export default function PdfPreview({ record, onClose }: PdfPreviewProps) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const blobUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     const generate = async () => {
@@ -22,6 +23,7 @@ export default function PdfPreview({ record, onClose }: PdfPreviewProps) {
         setLoading(true);
         const blob = await pdf(<ReportDocument record={record} />).toBlob();
         const url = URL.createObjectURL(blob);
+        blobUrlRef.current = url;
         setBlobUrl(url);
       } catch (e) {
         console.error("PDF generation failed:", e);
@@ -31,7 +33,7 @@ export default function PdfPreview({ record, onClose }: PdfPreviewProps) {
     };
     generate();
     return () => {
-      if (blobUrl) URL.revokeObjectURL(blobUrl);
+      if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
     };
   }, [record]);
 
